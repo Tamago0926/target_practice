@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ターゲット学習サイト</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="title">ターゲット学習サイト</div>
+    <section id="memory">
+        <ul class="settings">
+            <li class="range_text">範囲指定</li>
+            <li id="range">
+                <input type="number" name="range1" placeholder="1" id="range1">
+                 ～ 
+                <input type="number" name="range2" placeholder="1900" id="range2">
+            </li>
+            <li id="japanese">
+                <input type="checkbox" name="japanese" id="hide_japanese">
+                <span class="texts">日本語を隠す</span>
+            </li>
+            <li id="japanese">
+                <input type="checkbox" name="English" id="hide_English">
+                <span class="texts">英語を隠す</span>
+            </li>
+            <li id="button">
+                <button id="decision_button" onclick="input_table()">決定</button>
+            </li>
+        </ul>
+        <table id="main_table"></table>
+    </section>
+    <script src="script.js"></script>
+</body>
+</html>
