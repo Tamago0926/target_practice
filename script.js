@@ -1,5 +1,9 @@
 const main_table = document.getElementById("main_table");
 
+let words_data = null;
+let shuffled_check = false;
+let shuffle_data = [];
+
 async function get_local_json() {
   try {
     const res = await fetch('words.json');
@@ -12,7 +16,7 @@ async function get_local_json() {
 }
 
 async function expand_text() {
-    const words_data = await get_local_json();
+    words_data = await get_local_json();
     if (!words_data) return;
   
     for (let i = 0; i < words_data.data.length; i++) {
@@ -96,19 +100,22 @@ async function input_table () {
 
     main_table.innerHTML = "";
 
-    for (let i = range1 - 1; i < range2; i++) {
-        const tr = document.createElement("tr");
+    if (shuffled_check) {
+        shuffled_check = false;
 
+        for (let i = 0; i < shuffle_data.length; i++) {
+          const tr = document.createElement("tr");
+  
         const number = document.createElement("td");
         const english = document.createElement("td");
         const japanese = document.createElement("td");
-
+  
         const english_span = document.createElement("span");
         const japanese_span = document.createElement("span");
-
-        number.innerText = words_data.data[i][1];
-        english_span.innerText = words_data.data[i][2];
-        japanese_span.innerText = words_data.data[i][3];
+  
+        number.innerText = shuffle_data[i][1];
+        english_span.innerText = shuffle_data[i][2];
+        japanese_span.innerText = shuffle_data[i][3];
 
         // チェックボックス
         const checkbox_japanese = document.createElement("input");
@@ -117,22 +124,22 @@ async function input_table () {
         checkbox_japanese.style.marginRight = "8px";
         checkbox_japanese.style.width = "20px";
         checkbox_japanese.style.height = "20px";
-
+  
         if (hide_japanese) checkbox_japanese.checked = true;
-
+  
         const checkbox_English = document.createElement("input");
         checkbox_English.type = "checkbox";
         checkbox_English.id = `box_English_${i}`;
         checkbox_English.style.marginRight = "8px";
         checkbox_English.style.width = "20px";
         checkbox_English.style.height = "20px";
-
+  
         if (hide_English) checkbox_English.checked = true;
-
+  
         // 初期非表示
         if (hide_japanese) japanese_span.style.opacity = "0";
         if (hide_English) english_span.style.opacity = "0";
-
+  
         // チェックボックスクリックで非表示
         checkbox_japanese.addEventListener("change", () => {
             if (checkbox_japanese.checked) {
@@ -142,7 +149,7 @@ async function input_table () {
                 japanese_span.style.opacity = "1";
             }
         });
-
+  
         checkbox_English.addEventListener("change", () => {
             if (checkbox_English.checked) {
                 english_span.style.opacity = "0";
@@ -151,20 +158,122 @@ async function input_table () {
                 english_span.style.opacity = "1";
             }
         });
-
+  
         // 偶数行の背景色
         if (i % 2 === 0) tr.style.backgroundColor = "#f0f8ff";
-
+  
         // 要素を組み立て
         japanese.appendChild(checkbox_japanese);
         japanese.appendChild(japanese_span);
         english.appendChild(checkbox_English);
         english.appendChild(english_span);
-
+  
         tr.appendChild(number);
         tr.appendChild(english);
         tr.appendChild(japanese);
-
+  
+        main_table.appendChild(tr);
+        }
+    } else {
+      for (let i = range1 - 1; i < range2; i++) {
+        const tr = document.createElement("tr");
+  
+        const number = document.createElement("td");
+        const english = document.createElement("td");
+        const japanese = document.createElement("td");
+  
+        const english_span = document.createElement("span");
+        const japanese_span = document.createElement("span");
+  
+        number.innerText = words_data.data[i][1];
+        english_span.innerText = words_data.data[i][2];
+        japanese_span.innerText = words_data.data[i][3];
+  
+        // チェックボックス
+        const checkbox_japanese = document.createElement("input");
+        checkbox_japanese.type = "checkbox";
+        checkbox_japanese.id = `box_japanese_${i}`;
+        checkbox_japanese.style.marginRight = "8px";
+        checkbox_japanese.style.width = "20px";
+        checkbox_japanese.style.height = "20px";
+  
+        if (hide_japanese) checkbox_japanese.checked = true;
+  
+        const checkbox_English = document.createElement("input");
+        checkbox_English.type = "checkbox";
+        checkbox_English.id = `box_English_${i}`;
+        checkbox_English.style.marginRight = "8px";
+        checkbox_English.style.width = "20px";
+        checkbox_English.style.height = "20px";
+  
+        if (hide_English) checkbox_English.checked = true;
+  
+        // 初期非表示
+        if (hide_japanese) japanese_span.style.opacity = "0";
+        if (hide_English) english_span.style.opacity = "0";
+  
+        // チェックボックスクリックで非表示
+        checkbox_japanese.addEventListener("change", () => {
+            if (checkbox_japanese.checked) {
+                japanese_span.style.opacity = "0";
+                checkbox_japanese.checked = true;
+            } else {
+                japanese_span.style.opacity = "1";
+            }
+        });
+  
+        checkbox_English.addEventListener("change", () => {
+            if (checkbox_English.checked) {
+                english_span.style.opacity = "0";
+                checkbox_English.checked = true;
+            } else {
+                english_span.style.opacity = "1";
+            }
+        });
+  
+        // 偶数行の背景色
+        if (i % 2 === 0) tr.style.backgroundColor = "#f0f8ff";
+  
+        // 要素を組み立て
+        japanese.appendChild(checkbox_japanese);
+        japanese.appendChild(japanese_span);
+        english.appendChild(checkbox_English);
+        english.appendChild(english_span);
+  
+        tr.appendChild(number);
+        tr.appendChild(english);
+        tr.appendChild(japanese);
+  
         main_table.appendChild(tr);
     }
+    }
 }
+
+document.getElementById("random").addEventListener("click", () => {
+  const range1 = parseInt(document.getElementById("range1").value);
+  const range2 = parseInt(document.getElementById("range2").value);
+
+  if (range1 < 1 || range2 > words_data.data.length || range1 > range2 || isNaN(range1) || isNaN(range2)) {
+    alert("正しい範囲を入力してください。");
+    return;
+  }
+
+  shuffle_data = []
+  shuffled_check = true;
+
+  for (let i = range1 - 1; i < range2; i++) {
+    shuffle_data.push(words_data.data[i]);
+  }
+
+    const shuffle = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  };
+
+  shuffle_data = shuffle(shuffle_data);
+
+  input_table();
+});
